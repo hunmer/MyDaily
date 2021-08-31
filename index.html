@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>MyDaily</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-touch-fullscreen" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="full-screen" content="yes">
+	<meta name="browsermode" content="application">
+	<meta name="x5-fullscreen" content="true">
+	<meta name="x5-page-mode" content="app">
+	<meta name="keywords" contect="poseman,figurosity">
+	<meta name="description" contect="online pose vierer">
+    <link rel="shortcut icon" href="favicon.ico">
+	<meta name="Author" contect="liaoyanjie2000@gmail.com">
+
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap-grid.min.css">
+	<link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+  <link rel="stylesheet" href="css/hsycmsAlert.css">
+	<link rel="stylesheet" type="text/css" href="css/icon.css">
+	<link rel="stylesheet" href="css/index.css">
+</head>
+<body>
+
+	<!-- 消息提示 -->
+<div class="alert alert-warning alert-dismissible fade hide" role="alert" id="alert">
+  <div class="alert_content">
+ <strong>Holy guacamole!</strong>
+  <span> You should check in on some of those fields below.</span>    
+  </div>
+ 
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<!-- 新建 -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modal_craete_new">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Create new Travel</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+    <label for="exampleInputEmail1">Name</label>
+    <input type="text" class="form-control" id="new_name">
+    <div class="invalid-feedback"></div>
+
+    <div class="form-group">
+    <label for="exampleFormControlTextarea1">Desc</label>
+    <textarea class="form-control" id="new_desc" rows="1"></textarea>
+
+   
+   	<div class="mt-3">
+	<i id='selected_icon'></i>
+    <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#modal_select_icon">Set icon</button>   		
+   	</div>
+   	
+
+  </div>
+
+  </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="collection_create_new()">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 复制 -->
+<div class="modal fade text-center" tabindex="9999" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modal_copy" style="z-index: 9999">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Copy</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="clipboard_content">Content</label></br>
+          <textarea id="clipboard_content"></textarea></br>
+          <button id='clipboard' type="button" class="btn btn-primary" data-clipboard-target="#clipboard_content" onclick="$('#modal_copy').modal('hide')">Copy</button>
+      </div>
+    </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 选择图标 -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modal_select_icon">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Select Icon</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+  <div class="container-fluid">
+      	<nav aria-label="Page navigation example">
+  <ul class="pages row">
+    
+  </ul>
+</nav>
+	<div class="row" id="icon_list">
+	</div>
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- 对话内容 -->
+<div id="chat_content" class="ui hide" data-collection="">
+  <nav class="navbar navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="javascript: hideUI('chat_content');">
+      <!-- <img src="/docs/assets/brand/bootstrap-solid.svg" width="30" height="30" alt="" loading="lazy"> -->
+      <svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="bi bi-arrow-left" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+</svg>
+    </a>
+    <div class="row text-center">
+  <b style="font-size: 20px" class="col">Title</b>
+   <div class="w-100"></div>
+   <small class="text-muted col">...</small>  
+ </div>
+ 
+    <div class="icon_list float-right">
+<svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="bi bi-search mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
+  <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+</svg>
+
+      <svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="bi bi-bookmark-star-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M4 0a2 2 0 0 0-2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4zm4.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.178.178 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.178.178 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.178.178 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.178.178 0 0 1-.134-.098L8.16 4.1z"/>
+</svg>
+    </div>
+  </nav>
+  <div id="content" class="mt-4 d-flex align-items-end flex-column bd-highlight pr-2">
+
+  </div>
+
+  <div class="inputArea fixed-bottom bg-dark text-white" style="  padding-left: 20px;" >
+     <div class="row">
+
+    <div class="col p-2 mr-2" id="chat_input">
+      <textarea id='textarea' autofocus required contenteditable="true" class="form-control" rows="2" placeholder="write something in here..." style="resize: none;"></textarea>
+    </div>
+  </div>
+    
+   
+    <div class="row border-top border-dark pb-1">
+      <div class="col-2" onclick="modal_open_card_list();">
+       <svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="bi bi-layout-wtf mt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M5 1H1v8h4V1zM1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm13 2H9v5h5V2zM9 1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9zM5 13H3v2h2v-2zm-2-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3zm12-1H9v2h6v-2zm-6-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H9z"/>
+</svg>
+    </div>
+        <div class="col-2 text-center">
+      <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-tag mt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M2 2v4.586l7 7L13.586 9l-7-7H2zM1 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 1 6.586V2z"/>
+  <path fill-rule="evenodd" d="M4.5 5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+</svg>
+
+    </div>
+    <div class="col-2 text-center">
+ <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-card-image mt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M14.5 3h-13a.5.5 0 0 0-.5.5v9c0 .013 0 .027.002.04V12l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094L15 9.499V3.5a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm4.502 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+</svg>      
+    </div>
+  <div class="col-2 text-center">
+        <svg data-toggle="modal" data-target="#modal_bottom" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-three-dots-vertical dropdown-toggle mt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+</svg>  
+
+<!-- <input id="upload" class='inputstyle' type="file" accept=".jpg|.png" onchange="uploadImage()"/> -->
+    </div> 
+<div class="col mt-1 mr-2 bg-primary text-white text-center" onclick="chat_send();">
+      <!--   <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-cursor-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M14.082 2.182a.5.5 0 0 1 .103.557L8.528 15.467a.5.5 0 0 1-.917-.007L5.57 10.694.803 8.652a.5.5 0 0 1-.006-.916l12.728-5.657a.5.5 0 0 1 .556.103z"/>
+</svg> -->
+    Send
+    </div>    
+  </div>
+  </div>
+</div>
+
+<!-- 自定义对话框 -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modal_custom">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 消息模板 -->
+<div class="modal fade" id="modal_card_list">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Card-List</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+
+      </div>
+      <div class="modal-footer">
+        <div class="form-check form-check-inline">
+  <input class="form-check-input" type="checkbox" id="option_card_setDefault">
+  <label class="form-check-label" for="option_card_setDefault">Default</label>
+</div>
+
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="confirm_select_card_type();">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 编辑问题 -->
+<div class="modal fade" id="modal_question_edit">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Question</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-row">
+            <div class="col-12 mb-3">
+              <label for="question_edit_name">Question</label>
+              <input type="text" class="form-control" id="question_edit_name" value="" required>
+              <div class="invalid-feedback">
+              </div>
+            </div>
+<div class="col-12 mb-3">
+              <label for="question_edit_tip">Tip</label>
+              <input type="text" class="form-control" id="question_edit_tip" value="" required>
+              </div>          
+              <div class="col-6 mb-3 pl-0 ml-0">
+              <label for="question_edit_type">Type</label>
+              <select class="custom-select" id="question_edit_type" onchange="question_set_type()" required>
+                <option selected value="Custom">Custom</option>
+                <option value="Input" >Input</option>
+                <option value="CheckBox">CheckBox</option>
+                <option value="Select" >Select</option>
+              </select>
+              <div class="invalid-feedback">
+              </div>
+            </div>
+<div class="col-12 mb-3 pl-0 ml-0">
+              <label for="question_edit_html">HTML</label></br>
+             <textarea class="form-control w-100" id="question_edit_html" style="min-height: 50px;"></textarea>
+              <div class="invalid-feedback"></div>
+            </div>            
+      </div>
+    </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary done_btn" onclick="question_submit();">Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 消息选项 -->
+<div class="modal fade" tabindex="999" id="modal_msg_more">
+  <div class="modal-dialog w-50 mx-auto">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Menu</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <ul class="list-group">
+ <li class="list-group-item" onclick="modal_msg_more_action('edit')">
+
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+</svg>
+<span class="pl-1">Edit</span>
+        </li>          
+        <li class="list-group-item" onclick="modal_msg_more_action('pin')">
+           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-bar-up" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 10a.5.5 0 0 0 .5-.5V3.707l2.146 2.147a.5.5 0 0 0 .708-.708l-3-3a.5.5 0 0 0-.708 0l-3 3a.5.5 0 1 0 .708.708L7.5 3.707V9.5a.5.5 0 0 0 .5.5zm-7 2.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5z"/>
+</svg>
+  <!-- <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-bar-down" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M1 3.5a.5.5 0 0 1 .5-.5h13a.5.5 0 0 1 0 1h-13a.5.5 0 0 1-.5-.5zM8 6a.5.5 0 0 1 .5.5v5.793l2.146-2.147a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 .708-.708L7.5 12.293V6.5A.5.5 0 0 1 8 6z"/>
+  -->
+<span>Pin</span>
+         </li>
+                 <li class="list-group-item" onclick="modal_msg_more_action('alarm')">
+<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-alarm-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M6 .5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1H9v1.07a7.001 7.001 0 0 1 3.274 12.474l.601.602a.5.5 0 0 1-.707.708l-.746-.746A6.97 6.97 0 0 1 8 16a6.97 6.97 0 0 1-3.422-.892l-.746.746a.5.5 0 0 1-.707-.708l.602-.602A7.001 7.001 0 0 1 7 2.07V1h-.5A.5.5 0 0 1 6 .5zM.86 5.387A2.5 2.5 0 1 1 4.387 1.86 8.035 8.035 0 0 0 .86 5.387zM11.613 1.86a2.5 2.5 0 1 1 3.527 3.527 8.035 8.035 0 0 0-3.527-3.527zM8.5 5.5a.5.5 0 0 0-1 0v3.362l-1.429 2.38a.5.5 0 1 0 .858.515l1.5-2.5A.5.5 0 0 0 8.5 9V5.5z"/>
+</svg>
+<span>Alarm</span>
+         </li>
+        <li class="list-group-item" onclick="modal_msg_more_action('bookmark')">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-bookmark-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5V2z"/>
+</svg>
+
+</svg> 
+<span class="pl-1">Bookmark</span>
+          </li>      
+        <li class="list-group-item" onclick="modal_msg_more_action('hide')">
+
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-eye-slash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path d="M10.79 12.912l-1.614-1.615a3.5 3.5 0 0 1-4.474-4.474l-2.06-2.06C.938 6.278 0 8 0 8s3 5.5 8 5.5a7.029 7.029 0 0 0 2.79-.588zM5.21 3.088A7.028 7.028 0 0 1 8 2.5c5 0 8 5.5 8 5.5s-.939 1.721-2.641 3.238l-2.062-2.062a3.5 3.5 0 0 0-4.474-4.474L5.21 3.089z"/>
+  <path d="M5.525 7.646a2.5 2.5 0 0 0 2.829 2.829l-2.83-2.829zm4.95.708l-2.829-2.83a2.5 2.5 0 0 1 2.829 2.829z"/>
+  <path fill-rule="evenodd" d="M13.646 14.354l-12-12 .708-.708 12 12-.708.708z"/>
+</svg>
+<span class="pl-1">Hide</span>
+        </li>
+                <li class="list-group-item"  onclick="modal_msg_more_action('copy')">
+
+           <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-clipboard" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+  <path fill-rule="evenodd" d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+</svg>
+<span class="pl-1">Copy</span>
+        </li>
+ <li class="list-group-item" onclick="modal_msg_more_action('finish')">
+<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+</svg>
+<span class="pl-1">Finish</span>
+        </li>
+<!-- 
+ <li class="list-group-item">
+
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-slash-circle-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-4.646-2.646a.5.5 0 0 0-.708-.708l-6 6a.5.5 0 0 0 .708.708l6-6z"/>
+</svg>
+<span class="pl-1">Stop</span>
+        </li>
+ -->
+ <li class="list-group-item" onclick="modal_msg_more_action('tag')">
+
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-tag-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1H2zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+</svg>
+<span class="pl-1">Tag</span>
+        </li>
+
+         <li class="list-group-item" onclick="modal_msg_more_action('delete')">
+
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-trash-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5a.5.5 0 0 0-1 0v7a.5.5 0 0 0 1 0v-7z"/>
+</svg>
+<span class="pl-1">Delete</span>
+        </li>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 顶部弹出 -->
+<div class="modal fade" tabindex="999" id="modal_bottom">
+  <div class="modal-dialog fixed-bottom w-100 m-0">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Menu</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row text-center">
+          <div class="menu_icons col-4">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download " fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+  <path fill-rule="evenodd" d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+</svg>
+<span class="pl-1">Download</span>
+          </div>
+ <div class="menu_icons col-4">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download " fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+  <path fill-rule="evenodd" d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+</svg>
+<span class="pl-1">Download</span>
+          </div>      
+ <div class="menu_icons col-4">
+            <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-download " fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+  <path fill-rule="evenodd" d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+</svg>
+<span class="pl-1">Download</span>
+          </div>              
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<ul class="nav nav-pills fixed-bottom row row-cols-3 ui bg-white" id="pills-tab" role="tablist">
+  <li class="nav-item" role="presentation">
+    <a class="nav-link active text-center" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Home</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link text-center" id="pills-profile-tab" data-toggle="pill" href="#pills-profile" role="tab" aria-controls="pills-profile" aria-selected="false">Daily</a>
+  </li>
+  <li class="nav-item" role="presentation">
+    <a class="nav-link text-center" id="pills-contact-tab" data-toggle="pill" href="#pills-contact" role="tab" aria-controls="pills-contact" aria-selected="false" onclick="ui_enter_timeline();">Timeline</a>
+  </li>
+</ul>
+<div class="tab-content ui" id="pills-tabContent">
+  <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+  <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+      <!-- <img src="/docs/assets/brand/bootstrap-solid.svg" width="30" height="30" alt="" loading="lazy"> -->
+      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-house-door-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path d="M6.5 10.995V14.5a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .146-.354l6-6a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 .146.354v7a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5V11c0-.25-.25-.5-.5-.5H7c-.25 0-.5.25-.5.495z"/>
+  <path fill-rule="evenodd" d="M13 2.5V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
+</svg>
+    </a>
+    <span>MyDaily</span>
+   
+    <div class="icon_list float-right">
+ <svg data-action="createNew" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+</svg>
+
+<div class="btn-group dropleft">
+    <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-three-dots-vertical dropdown-toggle" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+</svg>	
+<div class="dropdown-menu">
+    <a class="dropdown-item" href="javascript: $('#upload').click();">import</a>
+    <a class="dropdown-item" href="javascript: downloadData();">expore</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">...</a>
+    
+<input id="upload" class='inputstyle' type="file" accept=".json" onchange="uploadFile()"/>
+  </div>
+</div>
+
+
+  
+    </div>
+  </nav>
+
+
+  	<div id="list">
+  </div>
+</div>
+  <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+      <nav class="navbar navbar-light bg-light">
+    <a class="navbar-brand" href="#">
+      <!-- <img src="/docs/assets/brand/bootstrap-solid.svg" width="30" height="30" alt="" loading="lazy"> -->
+      <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-house-door-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path d="M6.5 10.995V14.5a.5.5 0 0 1-.5.5H2a.5.5 0 0 1-.5-.5v-7a.5.5 0 0 1 .146-.354l6-6a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 .146.354v7a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1-.5-.5V11c0-.25-.25-.5-.5-.5H7c-.25 0-.5.25-.5.495z"/>
+  <path fill-rule="evenodd" d="M13 2.5V6l-2-2V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5z"/>
+</svg>
+    </a>
+    <span>Daily</span>
+   
+    <div class="icon_list float-right">
+ <svg data-action="createNewQuestion" width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+</svg>
+ <svg width="1.2em" height="1.2em" viewBox="0 0 16 16" data-action="daily_editMode" class="bi bi-pencil-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"/>
+</svg>
+<div class="btn-group dropleft">
+    <svg width="2em" height="1.2em" viewBox="0 0 16 16" class="bi bi-three-dots-vertical dropdown-toggle" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+</svg>  
+<div class="dropdown-menu">
+    <a class="dropdown-item" href="javascript: g_v_questions = question_reset(); local_saveJson('questions', g_v_questions); question_init();">reset</a>
+    <a class="dropdown-item" href="javascript: $('#upload').click();">import</a>
+    <a class="dropdown-item" href="javascript: downloadData();">expore</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">...</a>
+    
+<input id="upload" class='inputstyle hide' type="file" accept=".json" onchange="uploadFile()"/>
+  </div>
+</div>
+
+
+  
+    </div>
+  </nav>
+    <div class="row p-2">
+      <div class="col-2" onclick="datePicker_addDate(-1)">
+        <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-caret-left-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path d="M3.86 8.753l5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z"/>
+</svg>
+      </div>
+<div class="col-8 text-center">
+       <input class="datePicker text-center" type="text" class="form-control" data-date-end-date="0d">
+      </div>      
+<div class="col-2 text-right" onclick="datePicker_addDate(1)">
+        <svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-caret-right-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path d="M12.14 8.753l-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"/>
+</svg>
+      </div>      
+</div>
+<!-- 表情 -->
+<div class="row justify-content-center" id="faces">
+<div calss="col-1" data-action="setFace" data-value="0">
+<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-emoji-smile-upside-down-fill text-danger" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM7 9.5C7 8.672 6.552 8 6 8s-1 .672-1 1.5.448 1.5 1 1.5 1-.672 1-1.5zM4.285 6.433a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 4.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 3.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM10 8c.552 0 1 .672 1 1.5s-.448 1.5-1 1.5-1-.672-1-1.5S9.448 8 10 8z"/>
+</svg>
+</div>
+<div calss="col-1">&nbsp;&nbsp;</div>
+<div calss="col-1" data-action="setFace" data-value="1">
+<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-emoji-frown-fill text-warning" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm-2.715 5.933a.5.5 0 0 0 .683-.183A3.498 3.498 0 0 1 8 10.5c1.295 0 2.426.703 3.032 1.75a.5.5 0 0 0 .866-.5A4.498 4.498 0 0 0 8 9.5a4.5 4.5 0 0 0-3.898 2.25.5.5 0 0 0 .183.683zM10 8c.552 0 1-.672 1-1.5S10.552 5 10 5s-1 .672-1 1.5S9.448 8 10 8z"/>
+</svg>
+</div>
+<div calss="col-1">&nbsp;&nbsp;</div>
+
+<div calss="col-1" data-action="setFace" data-value="2">
+
+<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-emoji-neutral-fill text-secondary" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zm-3 4a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zM10 8c.552 0 1-.672 1-1.5S10.552 5 10 5s-1 .672-1 1.5S9.448 8 10 8z"/>
+</svg>
+</div>
+<div calss="col-1">&nbsp;&nbsp;</div>
+
+<div calss="col-1" data-action="setFace" data-value="3">
+<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-emoji-smile-fill text-primary" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 6.5C7 7.328 6.552 8 6 8s-1-.672-1-1.5S5.448 5 6 5s1 .672 1 1.5zM4.285 9.567a.5.5 0 0 1 .683.183A3.498 3.498 0 0 0 8 11.5a3.498 3.498 0 0 0 3.032-1.75.5.5 0 1 1 .866.5A4.498 4.498 0 0 1 8 12.5a4.498 4.498 0 0 1-3.898-2.25.5.5 0 0 1 .183-.683zM10 8c.552 0 1-.672 1-1.5S10.552 5 10 5s-1 .672-1 1.5S9.448 8 10 8z"/>
+</svg>
+</div>
+<div calss="col-1">&nbsp;&nbsp;</div>
+
+<div calss="col-1" data-action="setFace" data-value="4">
+<svg width="2em" height="2em" viewBox="0 0 16 16" class="bi bi-emoji-laughing-fill text-success" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zM7 6.5c0 .501-.164.396-.415.235C6.42 6.629 6.218 6.5 6 6.5c-.218 0-.42.13-.585.235C5.164 6.896 5 7 5 6.5 5 5.672 5.448 5 6 5s1 .672 1 1.5zm5.331 3a1 1 0 0 1 0 1A4.998 4.998 0 0 1 8 13a4.998 4.998 0 0 1-4.33-2.5A1 1 0 0 1 4.535 9h6.93a1 1 0 0 1 .866.5zm-1.746-2.765C10.836 6.896 11 7 11 6.5c0-.828-.448-1.5-1-1.5s-1 .672-1 1.5c0 .501.164.396.415.235.165-.106.367-.235.585-.235.218 0 .42.13.585.235z"/>
+</svg>
+</div>
+    </div>
+<div id="daily_content" class="pt-2"></div>
+  </div>
+  <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">
+<div id="timeline">
+  <nav class="navbar navbar-light bg-light fixed-top">
+    <a class="navbar-brand" href="javascript: ;">
+      <!-- <img src="/docs/assets/brand/bootstrap-solid.svg" width="30" height="30" alt="" loading="lazy"> -->
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar-date-fill" viewBox="0 0 16 16">
+  <path fill-rule="evenodd" d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zm-6.664-1.21c-1.11 0-1.656-.767-1.703-1.407h.683c.043.37.387.82 1.051.82.844 0 1.301-.848 1.305-2.164h-.027c-.153.414-.637.79-1.383.79-.852 0-1.676-.61-1.676-1.77 0-1.137.871-1.809 1.797-1.809 1.172 0 1.953.734 1.953 2.668 0 1.805-.742 2.871-2 2.871zm.066-2.544c.625 0 1.184-.484 1.184-1.18 0-.832-.527-1.23-1.16-1.23-.586 0-1.168.387-1.168 1.21 0 .817.543 1.2 1.144 1.2zm-2.957-2.89v5.332H5.77v-4.61h-.012c-.29.156-.883.52-1.258.777V8.16a12.6 12.6 0 0 1 1.313-.805h.632z"/>
+</svg>
+    </a>
+    <div class="row text-center">
+  <b style="font-size: 20px" class="col">TimeLine</b>
+   <div class="w-100"></div>
+   <small class="text-muted col">...</small>  
+ </div>
+ 
+    <div class="icon_list float-right">
+<svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="bi bi-search mr-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M10.442 10.442a1 1 0 0 1 1.415 0l3.85 3.85a1 1 0 0 1-1.414 1.415l-3.85-3.85a1 1 0 0 1 0-1.415z"/>
+  <path fill-rule="evenodd" d="M6.5 12a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11zM13 6.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"/>
+</svg>
+
+      <svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="bi bi-bookmark-star-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M4 0a2 2 0 0 0-2 2v13.5a.5.5 0 0 0 .74.439L8 13.069l5.26 2.87A.5.5 0 0 0 14 15.5V2a2 2 0 0 0-2-2H4zm4.16 4.1a.178.178 0 0 0-.32 0l-.634 1.285a.178.178 0 0 1-.134.098l-1.42.206a.178.178 0 0 0-.098.303L6.58 6.993c.042.041.061.1.051.158L6.39 8.565a.178.178 0 0 0 .258.187l1.27-.668a.178.178 0 0 1 .165 0l1.27.668a.178.178 0 0 0 .257-.187L9.368 7.15a.178.178 0 0 1 .05-.158l1.028-1.001a.178.178 0 0 0-.098-.303l-1.42-.206a.178.178 0 0 1-.134-.098L8.16 4.1z"/>
+</svg>
+    </div>
+  </nav>
+  <div id="timeline_content" class="d-flex align-items-end flex-column bd-highlight pr-2">
+
+  </div>
+
+<!--   <div class="inputArea fixed-bottom bg-dark text-white" style="  padding-left: 20px;" >
+     <div class="row">
+
+    <div class="col p-2 mr-2" id="chat_input">
+      <textarea id='textarea' autofocus required contenteditable="true" class="form-control" rows="2" placeholder="write something in here..." style="resize: none;"></textarea>
+    </div>
+  </div>
+    
+   
+    <div class="row border-top border-dark pb-1">
+      <div class="col-2" onclick="modal_open_card_list();">
+       <svg width="1.3em" height="1.3em" viewBox="0 0 16 16" class="bi bi-layout-wtf mt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M5 1H1v8h4V1zM1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1V1a1 1 0 0 0-1-1H1zm13 2H9v5h5V2zM9 1a1 1 0 0 0-1 1v5a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H9zM5 13H3v2h2v-2zm-2-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H3zm12-1H9v2h6v-2zm-6-1a1 1 0 0 0-1 1v2a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1H9z"/>
+</svg>
+    </div>
+        <div class="col-2 text-center">
+      <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-tag mt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M2 2v4.586l7 7L13.586 9l-7-7H2zM1 2a1 1 0 0 1 1-1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 1 6.586V2z"/>
+  <path fill-rule="evenodd" d="M4.5 5a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1zm0 1a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"/>
+</svg>
+
+    </div>
+    <div class="col-2 text-center">
+ <svg width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-card-image mt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+  <path fill-rule="evenodd" d="M14.5 3h-13a.5.5 0 0 0-.5.5v9c0 .013 0 .027.002.04V12l2.646-2.354a.5.5 0 0 1 .63-.062l2.66 1.773 3.71-3.71a.5.5 0 0 1 .577-.094L15 9.499V3.5a.5.5 0 0 0-.5-.5zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13zm4.502 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+</svg>      
+    </div>
+  <div class="col-2 text-center">
+        <svg data-toggle="modal" data-target="#modal_bottom" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-three-dots-vertical dropdown-toggle mt-2" fill="currentColor" xmlns="http://www.w3.org/2000/svg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+  <path fill-rule="evenodd" d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+</svg>  
+
+    </div> 
+<div class="col mt-1 mr-2 bg-primary text-white text-center" onclick="chat_send();">
+    Send
+    </div>    
+  </div>
+  </div> -->
+</div>
+
+<!-- 自定义对话框 -->
+<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true" id="modal_custom">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" onclick="">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+  </div>
+</div>
+</div>
+
+<!-- 弹窗插件 -->
+
+ <!--普通弹窗-->
+ <div class="hsycms-model-mask" id="mask-alert"></div>
+ <div class="hsycms-model hsycms-model-alert" id="alert">
+   <div class="hscysm-model-title">温馨提示</div>
+   <div class="hsycms-model-text">这里是内容</div>
+   <div class="hsycms-model-btn">
+    <button type="button ok">确定</button>
+   </div>
+ </div>
+
+ <!--提示弹窗-->
+ <div class="hsycms-model-mask" id="mask-tips"></div>
+ <div class="hsycms-model hsycms-model-tips" id="tips">
+ <div class="hsycms-model-text">这里是提示内容</div>
+ </div>
+
+ <!--询问弹窗-->
+ <div class="hsycms-model-mask" id="mask-confirm"></div>
+ <div class="hsycms-model hsycms-model-confirm" id="confirm">
+   <div class="hscysm-model-title">温馨提示</div>
+   <div class="hsycms-model-text">确定要操作？</div>
+   <div class="hsycms-model-btn">
+    <button type="button" class="cancel">取消</button>
+    <button type="button" class="ok">确定</button>
+   </div>
+ </div>
+
+<div class="hsycms-model-mask" onclick="hsycms.closeAll()" id="mask-model"></div>
+ <div class="hsycms-model hsycms-model-model" id="model">
+  <div class="hscysm-model-title">自定义弹窗</div>
+  <div class="hsycms-model-content"></div>
+</div> 
+
+
+<!--提交成功-->
+<div class="hsycms-model-mask" id="mask-success"></div>
+<div class="hsycms-model hsycms-model-success" id="success">
+ <div class="hsycms-model-icon">
+  <svg width="50" height="50">
+   <circle class="hsycms-alert-svgcircle"  cx="25" cy="25" r="24" fill="none" stroke="#238af4" stroke-width="2"></circle>   
+   <polyline class="hsycms-alert-svggou" fill="none" stroke="#238af4" stroke-width="2.5" points="14,25 23,34 36,18" stroke-linecap="round" stroke-linejoin="round" />
+ </svg>
+ </div>
+ <div class="hsycms-model-text">操作成功</div>
+</div>
+
+<!--提交失败-->
+<div class="hsycms-model-mask" id="mask-error"></div>
+<div class="hsycms-model hsycms-model-error" id="error">
+ <div class="hsycms-model-icon">
+  <svg width="50" height="50">
+   <circle class="hsycms-alert-svgcircle"  cx="25" cy="25" r="24" fill="none" stroke="#f54655" stroke-width="2"></circle>   
+   <polyline class="hsycms-alert-svgca1" fill="none" stroke="#f54655" stroke-width="2.5" points="18,17 32,35" stroke-linecap="round" stroke-linejoin="round" />
+   <polyline class="hsycms-alert-svgca2" fill="none" stroke="#f54655" stroke-width="2.5" points="18,35 32,17" stroke-linecap="round" stroke-linejoin="round" />
+ </svg>
+ </div>
+ <div class="hsycms-model-text">操作失败</div>
+</div>
+
+<!--这是Loading-->
+<div class="hsycms-model-mask" id="mask-loading"></div>
+<div class="hsycms-model hsycms-model-loading" id="loading" onclick="setLoading(false);">
+ <div class="hsycms-model-load">
+   <span></span>
+   <span></span>
+   <span></span>
+ </div>
+ <div class="hsycms-model-text">正在加载</div>
+</div>
+
+</body>
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.min.js"></script>
+<script src="js/until.js"></script>
+<script src="js/bootstrap.bundle.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/clipboard.min.js"></script>
+<script src="js/bootstrap-datepicker.min.js"></script>
+<script src="js/bootstrap-datepicker.zh-CN.min.js"></script>
+<script src="js/bootstrap-datepicker-en-CA.min.js"></script>
+<script src="js/bootstrap-datepicker.ja.min.js"></script>
+<script src="js/hsycmsAlert.js"></script>
+<script src="js/res.js"></script>
+<script src="js/index.js"></script>
+</html>
